@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+        crossorigin="anonymous">
+
+    <title>Gear Stack Template</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+</head>
+
+<body>
+     <style>
+ .loader { position: relative; width: 2.5em; height: 2.5em; transform: rotate(165deg); } .loader:before, .loader:after {
+content: ''; position: absolute; top: 50%; left: 50%; display: block; width: 0.5em; height: 0.5em; border-radius: 0.25em;
+transform: translate(-50%, -50%); } .loader:before { animation: before 2s infinite; } .loader:after { animation: after 2s
+infinite; } @keyframes before { 0% { width: 0.5em; box-shadow: 1em -0.5em rgba(225, 20, 98, 0.75), -1em 0.5em rgba(111, 202,
+220, 0.75); } 35% { width: 2.5em; box-shadow: 0 -0.5em rgba(225, 20, 98, 0.75), 0 0.5em rgba(111, 202, 220, 0.75); } 70%
+{ width: 0.5em; box-shadow: -1em -0.5em rgba(225, 20, 98, 0.75), 1em 0.5em rgba(111, 202, 220, 0.75); } 100% { box-shadow:
+1em -0.5em rgba(225, 20, 98, 0.75), -1em 0.5em rgba(111, 202, 220, 0.75); } } @keyframes after { 0% { height: 0.5em; box-shadow:
+0.5em 1em rgba(61, 184, 143, 0.75), -0.5em -1em rgba(233, 169, 32, 0.75); } 35% { height: 2.5em; box-shadow: 0.5em 0 rgba(61,
+184, 143, 0.75), -0.5em 0 rgba(233, 169, 32, 0.75); } 70% { height: 0.5em; box-shadow: 0.5em -1em rgba(61, 184, 143, 0.75),
+-0.5em 1em rgba(233, 169, 32, 0.75); } 100% { box-shadow: 0.5em 1em rgba(61, 184, 143, 0.75), -0.5em -1em rgba(233, 169,
+32, 0.75); } } /** * Attempt to center the whole thing! */ html, body { height: 100%; } .loader { position: absolute; top:
+calc(50% - 1.25em); left: calc(50% - 1.25em); }
+.list-group {cursor: pointer;}
+
+    </style>
+   
+    <!--<div style="width:400px;height:400px;position:absolute;top: 224px;background: #0000002e;z-index: 99;left: 26%;"></div> -->
+    <div class="loader"></div>
+    <div class="container-fluid bg-light" style="height: 100%">
+
+        <div class="row pt-5">
+            <div class="col-sm-3 mt-5 mr-2">
+                <ul class="list-group">
+                </ul>
+            </div>
+            <div class="col-sm-8 p-2">
+                <h1 class="text-center display-4" id="graphtitle"></h1>
+                <div style="display: block;">
+                    <canvas id="scatterChart" style="height:500px !important;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    console.log("This is a highly stable template");
+    console.log("Version 1.0");
+    var state = [];
+        var currentGraph = 0;
+        var masterDataLocalStore = [];
+        var loadCount = 0;
+        var currentGraph = 0;
+        var indexOfMatchedFileName = 0;
+        loadGraphs();
+        setInterval("continuousCheck()", 100);
+
+        function continuousCheck() {
+            state.splice(0, state.length - 4);
+            if (document.hasFocus()) {
+
+                if (state.length !== 0) { // Already states exists
+                    if (state[state.length - 1] !== "focus") { //
+                        state.push("focus");
+                        loadGraphs();
+                    }
+                } else { // This is a first timer
+                    state.push("focus");
+                    loadGraphs();
+                }
+
+            } else {
+                state.push("blur");
+            }
+        }
+
+        function loadGraphs() {
+            google.script.run.withSuccessHandler(onLoadSheetsDataForChart).loadSheetsDataForChart();
+        }
+
+        function selectedListItem(selectedname) {
+            indexOfMatchedFileName = masterDataLocalStore[0].indexOf(selectedname) < 0 ? 0 : masterDataLocalStore[0].indexOf(selectedname);
+            displayChartBasedOnSelectedSheet(masterDataLocalStore[1][indexOfMatchedFileName])
+        }
+
+        function onLoadSheetsDataForChart(masterdata) {
+            loadCount++
+            masterDataLocalStore = [];
+
+            masterDataLocalStore = masterdata;
+            if (loadCount === 1) {
+                displayChartBasedOnSelectedSheet(masterDataLocalStore[1][0]);
+            }else{
+                displayChartBasedOnSelectedSheet(masterDataLocalStore[1][indexOfMatchedFileName]);
+            }
+            $(".list-group").empty();
+                masterDataLocalStore[0].forEach(function (sheetName) {
+                $(".list-group").append("<li class='list-group-item' onclick='selectedListItem(this.textContent)' alt='" + sheetName + "'>" + sheetName + "</li>");
+            })
+        }
+
+        function dataArrayCreatorForDesign(x, y) {
+            var data = [];
+            x.forEach((xVal, i) => {
+                data.push({
+                    x: xVal,
+                    y: y[i]
+                })
+            });
+            return data;
+        }
+
+
+    function displayChartBasedOnSelectedSheet(chartdata) {
+        var count = 0;
+        $(".loader").hide();
+        $("#graphtitle").text(chartdata.dataFor);
+        var ctx = document.getElementById("scatterChart");
+        var color = Chart.helpers.color;
+        window.chartColors = {
+            red: 'rgb(255, 99, 132)',
+            orange: 'rgb(255, 159, 64)',
+            yellow: 'rgb(255, 205, 86)',
+            green: 'rgb(75, 192, 192)',
+            blue: 'rgb(54, 162, 235)',
+            purple: 'rgb(153, 102, 255)',
+            grey: 'rgb(201, 203, 207)'
+        };
+            var xAxisForDesign = chartdata.xAxisForDesign;
+            var yAxisForDesign = chartdata.yAxisForDesign;
+            var xAxisForData = chartdata.xAxisForData;
+            var yAxisForData = chartdata.yAxisForData;
+            var xAxisForSpecLimits = chartdata.xAxisForSpecLimits;
+            var yAxisForSpecLimits = chartdata.yAxisForSpecLimits;
+            var xAxisForSeries5 = chartdata.xAxisForSeries5;
+            var yAxisForSeries5 = chartdata.yAxisForSeries5;
+
+        var scatterChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                            label: 'Design',
+                            borderColor: window.chartColors.red,
+                            backgroundColor: color(window.chartColors.red).alpha(0.2).rgbString(),
+                            data: dataArrayCreatorForDesign(xAxisForDesign, yAxisForDesign)
+                        }, {
+                            label: 'Data',
+                            borderColor: window.chartColors.orange,
+                            backgroundColor: color(window.chartColors.orange).alpha(0.2).rgbString(),
+                            data: dataArrayCreatorForDesign(xAxisForData, yAxisForData)
+                        }, {
+                            label: 'Spec Limits',
+                            borderColor: window.chartColors.yellow,
+                            backgroundColor: color(window.chartColors.yellow).alpha(1).rgbString(),
+                            data: dataArrayCreatorForDesign(xAxisForSpecLimits, yAxisForSpecLimits)
+                        }, {
+                        label: 'Series 5',
+                        borderColor: window.chartColors.green,
+                        backgroundColor: color(window.chartColors.green).alpha(1).rgbString(),
+                        data: dataArrayCreatorForDesign(xAxisForSeries5, yAxisForSeries5)
+                    }
+                    ]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        type: 'linear',
+                        position: 'bottom'
+                    }]
+                },
+                events: []
+            }
+        });
+
+    }
+</script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
