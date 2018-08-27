@@ -9,7 +9,7 @@
 * [`Get by sheet name`](#get-sheet-by-sheet-name)
 
 * [`list of all sheets`](#list-of-all-sheets)
-* [`get-sheet-name`](#get-sheet-name)
+* [`Get sheet name`](#get-sheet-name)
 * [`get values`](#get-values)
 * [`set values`](#set-values)
 * [`set values, background, fontSize and fontColor`](#set-values-background-fontSize-and-fontColor)
@@ -29,8 +29,7 @@
 
 * [`Link backend(.gs) code with .html file`](#link-backend-to-frontend)
 * [`API to link frontend to backend`](#api-to-link-frontend-to-backend)
-* [`API to link forntend to backend`](#import-sheet)
-* [`API to link forntend to backend`](#import-sheet)
+* [`Inline dialog modal to open webapp on new page`](#inline-dialog-modal-to-open-webapp-on-new-page)
 
 </details>
 
@@ -40,7 +39,7 @@ SpreadsheetApp.getActiveSpreadsheet();
 ```
 ### get-sheet-by-sheet-name
 ```js
-SpreadsheetApp.getActiveSpreadsheet()..getSheetByName("Sheet1");
+SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
 ```
 
 ### list-of-all-sheets
