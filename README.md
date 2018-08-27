@@ -12,7 +12,7 @@
 * [`Get sheet name`](#get-sheet-name)
 * [`get values`](#get-values)
 * [`set values`](#set-values)
-* [`set values, background, fontSize and fontColor`](#set-values-background-fontSize-and-fontColor)
+* [`get and set values, background, fontSize and fontColor`](#get-and-set-values-background-fontsize-and-fontcolor)
 </details>
 
 ### UI Components
@@ -60,7 +60,7 @@ var values = targetSheet.getRange('AD78:AD128').getValues();
 ```js
 targetSheet.getRange('AD78:AD128').setValues(values);
 ```
-### set-values-background-fontSize-and-fontColor
+### get-and-set-values-background-fontsize-and-fontcolor
 ```js
     var values = source_range.getValues();
     var bGcolors = source_range.getBackgrounds();
@@ -136,6 +136,8 @@ and @backend
 ### google api's and google apps script are both different.
 - [ ] Note: you can try to fetch the data from spreadsheet on to frontend and compute at front end.Using google API's
 
+---
+<br>[⬆ Back to top](#table-of-contents)
 ### link-backend-to-frontend
 You have to use `doGet()`
 ```js
@@ -171,6 +173,8 @@ You have to use `doGet()`
 ```
 `getCurrentWebAppURL()` throws url to webapage, so that it be opened at another page.
 
+---
+<br>[⬆ Back to top](#table-of-contents)
 
 
 
